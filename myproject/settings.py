@@ -5,7 +5,7 @@ from decouple import config, Csv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-ALLOWED_HOSTS = ['43.203.215.201', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['3.36.50.16', '127.0.0.1', 'localhost']
 
 SECRET_KEY = config('SECRET_KEY')
 
