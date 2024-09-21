@@ -5,7 +5,7 @@ from decouple import config, Csv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-ALLOWED_HOSTS = ['3.36.50.16', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['13.125.243.97', '127.0.0.1', 'localhost']
 
 SECRET_KEY = config('SECRET_KEY', default='your-default-secret-key')
 
@@ -110,7 +110,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'bus',
         'USER': 'bus-admin',
-        'PASSWORD': '04321',
+        'PASSWORD': '1234',
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
