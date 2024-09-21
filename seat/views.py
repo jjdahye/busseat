@@ -1,16 +1,32 @@
 # seat/views.py
 from rest_framework import viewsets, generics
 from .models import Seat, Bus, Stop
-from .serializers import SeatSerializer, BusSerializer, StopSerializer
-from rest_framework.decorators import api_view, action  # action 추가
+from .serializers import SeatSerializer
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
+from rest_framework import status
 
-# SeatViewSet은 필요에 따라 유지
+# 좌석 상태 업데이트 API
+@api_view(['PATCH'])
+def update_seat_status(request, seat_id):
+    try:
+        seat = Seat.objects.get(id=seat_id)
+        status = request.data.get('status')
+
+        if status not in [Seat.OCCUPIED, Seat.AVAILABLE]:
+            return Response({'error': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
+
+        seat.status = status
+        seat.save()
+        return Response({'message': 'Seat status updated successfully'}, status=status.HTTP_200_OK)
+    except Seat.DoesNotExist:
+        return Response({'error': 'Seat not found'}, status=status.HTTP_404_NOT_FOUND)
+
+# 기존 코드 유지
 class SeatViewSet(viewsets.ModelViewSet):
     queryset = Seat.objects.all()
     serializer_class = SeatSerializer
 
-# 특정 버스의 좌석 정보를 가져오는 API
 @api_view(['GET'])
 def get_seat_data_by_bus(request, bus_id):
     try:
@@ -19,29 +35,8 @@ def get_seat_data_by_bus(request, bus_id):
         seat_data = {seat.seat_number: seat.status for seat in seats}
         return Response(seat_data)
     except Bus.DoesNotExist:
-        return Response({'error': 'Bus not found'}, status=404)
+        return Response({'error': 'Bus not found'}, status=status.HTTP_404_NOT_FOUND)
 
-# StopViewSet은 그대로 유지
-class StopViewSet(viewsets.ModelViewSet):
-    queryset = Stop.objects.all()
-    serializer_class = StopSerializer
-
-# BusViewSet은 특정 정류장을 지나는 버스 목록을 반환하는 API를 유지
-class BusViewSet(viewsets.ModelViewSet):
-    queryset = Bus.objects.all()
-    serializer_class = BusSerializer
-
-    @action(detail=False, methods=['get'])
-    def by_stop(self, request, stop_id=None):
-        try:
-            stop = Stop.objects.get(id=stop_id)
-            buses = stop.buses.all()
-            serializer = self.get_serializer(buses, many=True)
-            return Response(serializer.data)
-        except Stop.DoesNotExist:
-            return Response({'error': 'Stop not found'}, status=404)
-
-# added!
 class SeatListCreateView(generics.ListCreateAPIView):
     queryset = Seat.objects.all()
     serializer_class = SeatSerializer

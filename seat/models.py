@@ -26,13 +26,12 @@ class Seat(models.Model):
         (AVAILABLE, 'Available'),
     ]
 
-    seat_number = models.CharField(max_length=10)
+    seat_number = models.CharField(max_length=10, unique=True)
     status = models.CharField(
         max_length=10,
         choices=SEAT_STATUS_CHOICES,
         default=AVAILABLE
     )
-    bus = models.ForeignKey(Bus, on_delete=models.CASCADE, related_name='seats')  # Bus와의 관계 추가
 
     def __str__(self):
         return f"{self.seat_number} ({self.status})"
