@@ -2,7 +2,7 @@
 from rest_framework import viewsets, generics
 from .models import Seat, Bus, Stop
 from .serializers import SeatSerializer
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -26,6 +26,19 @@ def update_seat_status(request, seat_id):
 class SeatViewSet(viewsets.ModelViewSet):
     queryset = Seat.objects.all()
     serializer_class = SeatSerializer
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()  # 좌석 인스턴스 가져오기
+        status = request.data.get('status', None)
+        
+        if status not in [Seat.OCCUPIED, Seat.AVAILABLE]:
+            return Response({"error": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
+
+        instance.status = status  # 상태 변경
+        instance.save()  # 변경 사항 저장
+        
+        serializer = self.get_serializer(instance)  # 변경된 인스턴스의 시리얼라이저 가져오기
+        return Response(serializer.data, status=status.HTTP_200_OK)  # 변경된 데이터 반환
 
 @api_view(['GET'])
 def get_seat_data_by_bus(request, bus_id):
