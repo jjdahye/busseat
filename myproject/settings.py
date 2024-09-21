@@ -7,8 +7,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 ALLOWED_HOSTS = ['3.36.50.16', '127.0.0.1', 'localhost']
 
-SECRET_KEY = config('SECRET_KEY')
-
 # Application definition
 
 INSTALLED_APPS = [
